@@ -1,0 +1,23 @@
+import numpy as np
+from PIL import Image, ImageDraw
+from paddleocr import PaddleOCR, draw_ocr
+
+ocr = PaddleOCR(use_angle_cls=True, lang='en') # need to run only once to download and load model into memory
+file_path = ""
+# open method used to open different extension image file 
+im = Image.open(file_path)
+im_arr = np.array(im)
+result = ocr.ocr(im_arr, cls=True)
+result = result[0]
+boxes = [line[0] for line in result]
+
+def convert_bbox(bbox):
+    x = [i[0] for i in bbox]
+    y = [i[1] for i in bbox]
+    return (min(x), min(y), max(x), max(y))
+
+draw = ImageDraw.Draw(im)
+for box in boxes:
+    draw.rectangle(convert_bbox(box), outline="red", width=2)
+
+im
